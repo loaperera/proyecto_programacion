@@ -54,10 +54,8 @@ if __name__ == "__main__":
     Test_manual_regression()
 
 
-#************************************************************************
-# APARTADO 4: Telemetría de Radar. Derivación numérica.
-#************************************************************************
 
+# APARTADO 4: Telemetría de Radar. Derivación numérica.
 from numpy import zeros, linspace, array, sqrt
 import matplotlib.pyplot as plt
 
