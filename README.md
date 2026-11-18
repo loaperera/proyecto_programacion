@@ -1,11 +1,11 @@
 # proyecto_programacion
 
-##### APARTADO 2 ####
+# APARTADO 2
 from numpy import array, polyfit, polyval, linspace, diag, transpose, matmul
 from numpy.linalg import svd, solve  
 import matplotlib.pyplot as plt
 
-# Método para ajuste lineal por numpy
+### Método para ajuste lineal por numpy
 def Test_numpy_regression():
     q_tunel = array([500, 1000, 1500, 2000, 2500, 3000])
     F_drag_tunel = array([12.1, 25.3, 37.8, 51.0, 62.5, 76.2])
@@ -23,7 +23,7 @@ def Test_numpy_regression():
 if __name__ == "__main__":
     Test_numpy_regression()
 
-# Método para ajuste lineal manual
+### Método para ajuste lineal manual
 def Vandermonde(x, N, M):
     return array([[x[j]**i for i in range(1, N+1)] for j in range(M)])
 
