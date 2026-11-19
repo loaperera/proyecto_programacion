@@ -52,6 +52,7 @@ def Test_manual_regression():
 
 if __name__ == "__main__":
     Test_manual_regression()
+
 # APARTADO 3
 from numpy import array, linspace, zeros, dot
 import matplotlib.pyplot as plt
@@ -168,6 +169,7 @@ def Plot_Apartado4(ax, t, x, y, ax_slider):
 
     for i in range(len(t)):
         print(f"{t[i]:<10.2f}{Vx[i]:<13.2f}{Vy[i]:<13.2f}{V[i]:<13.2f}")
+    
     print(48*"-")
     print("Velocidad inicial =", round(V[0], 2), "m/s")
     print("Velocidad en apogeo =", round(V[9], 2), "m/s")
