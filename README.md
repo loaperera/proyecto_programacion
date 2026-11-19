@@ -91,13 +91,11 @@ def modelo_atmosferico():
 
     return altitudes_isa, densidades_isa, hm, rhom, h_apogeo, rho_apogeo
  
- ### Validación en un nodo conocido (h = 500 m -> rho = 1.167 kg/m^3)
+ ### Validación en un nodo conocido (h = 500 m -> rho = 1.167 kg/m^3) y representación gráfica
 def test_apartado3():
     altitudes_isa, densidades_isa, hm, rhom, h_apogeo, rho_apogeo = modelo_atmosferico()
     rho_test = interpolar_densidad_isa(altitudes_isa, densidades_isa, 500.0)
     print("Test validación en nodo h = 500 m (error) =", abs(rho_test - 1.167))
-    
- ### Representación gráfica
     plt.plot(altitudes_isa, densidades_isa, 'o', label='Datos ISA')
     plt.plot(hm, rhom, '-', label='Interpolante de Lagrange')
     plt.plot(h_apogeo, rho_apogeo, 'rs', label='Apogeo (h = 405 m)')
