@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
 
 
-# APARTADO 4: Telemetría de Radar. Derivación numérica.
+# APARTADO 4
 from numpy import zeros, linspace, array, sqrt
 import matplotlib.pyplot as plt
 
@@ -86,7 +86,7 @@ def Radar_kinematics(t, x, y):
 
     return Vx, Vy, V
 
-# Gráfica y resultados del Apartado 4 (para el Dashboard de main.py)
+# Gráfica y resultados
 
 def Plot_Apartado4(ax, t, x, y):
 
