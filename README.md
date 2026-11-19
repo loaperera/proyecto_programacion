@@ -56,21 +56,15 @@ if __name__ == "__main__":
 from numpy import array, linspace, zeros, dot
 import matplotlib.pyplot as plt
 
- ### Evaluación de los polinomios de Lagrange y sus derivadas en xp.
+ ### Evaluación de los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
 def Lagrange_polynomials(x, xp):
-
- ### Evaluamos los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
     N = len(x) - 1
     Lagrange = zeros((N+1, N+1, N+1))
-
- ### j indica cada uno de los distintos polinomios de Lagrange
     for j in range(N+1):
- ### El polinomio de Lagrange j de orden 0 es igual a 1
         Lagrange[0, j, 0] = 1
         n = 1
         for i in range(N+1):
             if i != j:
- ### El orden del polinomio aumenta solo cuando se considera el nodo x[i] (i != j)
                 for k in range(N, -1, -1): # k es el orden de derivación
                     Lagrange[k, j, n] = ( Lagrange[k, j, n-1] * (xp - x[i]) + k * Lagrange[k-1, j, n-1] ) / ( x[j] - x[i] )
                 n = n + 1
@@ -83,12 +77,8 @@ def interpolar_densidad_isa(altitudes_isa, densidades_isa, h_objetivo):
 
  ### Calcula la densidad del aire en el apogeo (h = 405 m) y genera la curva interpolada.
 def modelo_atmosferico():
-    
- ### Atmósfera Estándar (ISA): Altitud (m) y Densidad (kg/m^3)
     altitudes_isa = array([0, 500, 1000, 1500, 2000, 2500])
     densidades_isa = array([1.225, 1.167, 1.112, 1.058, 1.007, 0.957])
-
- ### Cálculo de la densidad en el apogeo
     h_apogeo = 405.0
     rho_apogeo = interpolar_densidad_isa(altitudes_isa, densidades_isa, h_apogeo)
     print("Densidad del aire en el apogeo (h = 405 m) =", rho_apogeo, "kg/m^3")
@@ -110,6 +100,7 @@ def test_apartado3():
  ### Validación en un nodo conocido (h = 500 m -> rho = 1.167 kg/m^3)
     rho_test = interpolar_densidad_isa(altitudes_isa, densidades_isa, 500.0)
     print("Test validación en nodo h = 500 m (error) =", abs(rho_test - 1.167))
+    
  ### Representación gráfica
     plt.plot(altitudes_isa, densidades_isa, 'o', label='Datos ISA')
     plt.plot(hm, rhom, '-', label='Interpolante de Lagrange')
@@ -155,7 +146,7 @@ def Radar_kinematics(t, x, y):
 
     return Vx, Vy, V
 
- ### Gráfica y resultados del Apartado 4
+ ### Gráfica y resultados
 
 def Plot_Apartado4(ax, t, x, y, ax_slider):
 
@@ -199,7 +190,6 @@ def Plot_Apartado4(ax, t, x, y, ax_slider):
     slider_epsilon = Slider(ax_slider, "Error radar (m) ", 0.0, 3.0, valinit=0.0, valstep=0.2)
 
  ### Recálculo y actualización de las curvas en tiempo real
-   
     def update(val):
         draw_plot(slider_epsilon.val)
         plt.pause(0.01)
