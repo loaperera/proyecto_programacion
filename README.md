@@ -54,46 +54,84 @@ if __name__ == "__main__":
     Test_manual_regression()
 
 # APARTADO 3
-import numpy as np
-from scipy.interpolate import lagrange
+from numpy import array, linspace, zeros, dot
 import matplotlib.pyplot as plt
 
-def estimar_densidad_local():
-### Datos de Partida: Atmósfera Estándar (ISA)
-    altitud_isa = np.array([0, 500, 1000, 1500, 2000, 2500])
-    densidad_isa = np.array([1.225, 1.167, 1.112, 1.058, 1.007, 0.957])
+def Lagrange_polynomials(x, xp):
+
+###Evalúa los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
+    N = len(x) - 1
+    Lagrange = zeros((N+1, N+1, N+1))
+
+### j indica cada uno de los distintos polinomios de Lagrange
+    for j in range(N+1):
+### El polinomio de Lagrange j de orden 0 es igual a 1
+        Lagrange[0, j, 0] = 1
+        n = 1
+        for i in range(N+1):
+            if i != j:
+### El orden del polinomio aumenta solo cuando se considera el nodo x[i] (i != j)
+                for k in range(N, -1, -1): # k es el orden de derivación
+                    Lagrange[k, j, n] = (Lagrange[k, j, n-1] * (xp - x[i]) + k * Lagrange[k-1, j, n-1]) / (x[j] - x[i])
+                n = n + 1
+
+### Devuelve los polinomios de Lagrange asociados al nodo x_j evaluados en x = xp
+    return Lagrange[:, :, n-1]
+
+
+def interpolar_densidad_isa(altitudes_isa, densidades_isa, h_objetivo):
     
-### Altitud de apogeo registrada por el radar
-    h_apogeo = 405.0 
+### Evalúa el interpolante 1D de Lagrange para la densidad ISA en h_objetivo.
     
-### Creación del polinomio interpolante de Lagrange (estilo week10.py)
-    polinomio_densidad = lagrange(altitud_isa, densidad_isa)
+    L = Lagrange_polynomials(altitudes_isa, h_objetivo)
+    return dot(L[0, :], densidades_isa)
+
+
+def modelo_atmosferico():
     
-### Evaluación del polinomio en h = 405 m
-    rho_apogeo = polinomio_densidad(h_apogeo)
+### Calcula la densidad del aire en el apogeo (h = 405 m) y genera la curva interpolada.
     
-### Resultados e interpretación física
-    print(f"--- Apartado 3: Modelo Atmosférico Local ---")
-    print(f"Densidad del aire estimada a {h_apogeo} m: {rho_apogeo:.4f} kg/m^3")
-    print("Sentido Físico: Como era de esperar, al ascender a 405 metros, la densidad del aire experimenta una disminución respecto al nivel del mar (1.225 kg/m^3), lo que se traducirá en una menor resistencia aerodinámica sobre la sonda en su punto de apogeo.")
+### 3. Atmósfera Estándar (ISA): Altitud (m) y Densidad (kg/m^3)
+    altitudes_isa = array([0, 500, 1000, 1500, 2000, 2500])
+    densidades_isa = array([1.225, 1.167, 1.112, 1.058, 1.007, 0.957])
+
+### Cálculo de la densidad exactamente en el apogeo
+    h_apogeo = 405.0
+    rho_apogeo = interpolar_densidad_isa(altitudes_isa, densidades_isa, h_apogeo)
+
+### Interpretación física obligatoria por consola
+    print("Densidad del aire en el apogeo (h = 405 m) =", rho_apogeo, "kg/m^3")
+    print("Interpretación física: A 405 m de altitud la densidad del aire disminuye ligeramente respecto al nivel del mar (1.225 kg/m^3), reduciendo la resistencia aerodinámica en el apogeo.")
+
+### Puntos del polinomio interpolante para representar la curva
+    M = 100
+    hm = linspace(0, 2500, M)
+    rhom = zeros(M)
+    for i in range(M):
+        rhom[i] = interpolar_densidad_isa(altitudes_isa, densidades_isa, hm[i])
+
+    return altitudes_isa, densidades_isa, hm, rhom, h_apogeo, rho_apogeo
     
-### Gráfica del interpolante
-    hp = np.linspace(0, 2500, 100)
-    rhop = polinomio_densidad(hp)
-    
-    plt.scatter(altitud_isa, densidad_isa, label='Datos ISA')
-    plt.plot(hp, rhop, 'r', label='Polinomio interpolante')
-    plt.scatter([h_apogeo], [rho_apogeo], color='green', zorder=5, label=f'Apogeo ({h_apogeo} m)')
+### Procedimientos de validación y prueba
+def test_apartado3():
+    altitudes_isa, densidades_isa, hm, rhom, h_apogeo, rho_apogeo = modelo_atmosferico()
+
+ ### Validación en un nodo conocido (h = 500 m -> rho = 1.167 kg/m^3)
+    rho_test = interpolar_densidad_isa(altitudes_isa, densidades_isa, 500.0)
+    print("Test validación en nodo h = 500 m (error) =", abs(rho_test - 1.167))
+
+### Representación gráfica
+    plt.plot(altitudes_isa, densidades_isa, 'o', label='Datos ISA')
+    plt.plot(hm, rhom, '-', label='Interpolante de Lagrange')
+    plt.plot(h_apogeo, rho_apogeo, 'rs', label='Apogeo (h = 405 m)')
     plt.xlabel('Altitud h (m)')
-    plt.ylabel('Densidad ρ (kg/m³)')
-    plt.title('Interpolación 1D - Densidad ISA')
+    plt.ylabel('Densidad (kg/m^3)')
     plt.legend()
     plt.show()
-    
-    return rho_apogeo
+
 
 if __name__ == "__main__":
-    rho_estimada = estimar_densidad_local()
+    test_apartado3()
 
 # APARTADO 4
 from numpy import zeros, linspace, array, sqrt
