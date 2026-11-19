@@ -154,7 +154,7 @@ def Derivatives(t, f):
     df[N] = ( 3*f[N] - 4*f[N-1] + f[N-2] ) / ( 2*dt )
 
     return df
-
+    
 ### Velocidades a partir de telemetría del radar.
 
 def Radar_kinematics(t, x, y):
@@ -185,38 +185,34 @@ def Plot_Apartado4(ax, t, x, y, ax_slider):
     print("Sentido físico: Vx disminuye por la resistencia del aire y Vy es 0 en el apogeo (t=4.5 s).\n")
 
 ### Gráfica inicial
-    ax.clear()
-    linea_Vx, = ax.plot(t, Vx, ".-", label="Vx")
-    linea_Vy, = ax.plot(t, Vy, ".-", label="Vy")
-    linea_V,  = ax.plot(t, V,  ".-", label="V")
-    ax.set_xlabel("t (s)")
-    ax.set_ylabel("Velocidad (m/s)")
-    ax.set_title("Apartado 4: Cinemática del Radar")
-    ax.legend()
-    ax.grid()
+    def draw_plot(eps):
+        perturbacion = eps * sin(3.0 * t)
+        Vx_new, Vy_new, V_new = Radar_kinematics(t, x + perturbacion, y + perturbacion)
 
-    texto = f"V0 = {V[0]:.2f} m/s | V_apogeo = {V[9]:.2f} m/s | Vf = {V[-1]:.2f} m/s\nSentido físico: Vx baja por el drag y Vy = 0 en el apogeo."
-    caja_texto = ax.text(0.05, 0.05, texto, transform=ax.transAxes, bbox=dict(facecolor="white", alpha=0.8))
+        ax.clear()
+        ax.plot(t, Vx_new, ".-", label="Vx")
+        ax.plot(t, Vy_new, ".-", label="Vy")
+        ax.plot(t, V_new,  ".-", label="V")
+        ax.set_xlabel("t (s)")
+        ax.set_ylabel("Velocidad (m/s)")
+        ax.set_title("Apartado 4: Cinemática del Radar")
+        ax.legend()
+        ax.grid()
+
+        texto = f"V0 = {V_new[0]:.2f} m/s | V_apogeo = {V_new[9]:.2f} m/s | Vf = {V_new[-1]:.2f} m/s ($\\varepsilon$ = {eps:.1f} m)\nSentido físico: Vx baja por el drag y Vy = 0 en el apogeo."
+        ax.text(0.05, 0.05, texto, transform=ax.transAxes, bbox=dict(facecolor="white", alpha=0.8))
+
+    draw_plot(0.0)
 
 ### Slider de perturbación (para modificar el error de lectura del radar (epsilon en metros))
     ax_slider.clear()
     slider_epsilon = Slider(ax_slider, "Error radar (m) ", 0.0, 3.0, valinit=0.0, valstep=0.2)
 
 ### Recálculo y actualización de las curvas en tiempo real
-    def update(val):
-        eps = slider_epsilon.val
-        perturbacion = eps * sin(3.0 * t)
-        Vx_new, Vy_new, V_new = Radar_kinematics(t, x + perturbacion, y + perturbacion)
-
-        linea_Vx.set_ydata(Vx_new)
-        linea_Vy.set_ydata(Vy_new)
-        linea_V.set_ydata(V_new)
-
-        caja_texto.set_text(
-            f"V0 = {V_new[0]:.2f} m/s | V_apogeo = {V_new[9]:.2f} m/s | Vf = {V_new[-1]:.2f} m/s ($\\varepsilon$ = {eps:.1f} m)\n"
-            f"Sentido físico: Pequeños errores en la posición amplifican oscilaciones al derivar."
-        )
-        ax.figure.canvas.draw_idle()
+   
+def update(val):
+        draw_plot(slider_epsilon.val)
+        plt.pause(0.01)
 
     slider_epsilon.on_changed(update)
 
@@ -229,8 +225,7 @@ if __name__ == "__main__":
     y_tel = array([0, 85, 160, 225, 280, 325, 360, 385, 400, 405, 400, 385, 360, 325, 280, 225, 160])
 
     fig, ax = plt.subplots()
-    plt.subplots_adjust(bottom=0.22)
-    ax_slider = plt.axes([0.22, 0.06, 0.63, 0.04])
+    ax_slider = plt.axes([0.22, 0.02, 0.63, 0.03])
 
     slider = Plot_Apartado4(ax, t_tel, x_tel, y_tel, ax_slider)
     plt.show()
