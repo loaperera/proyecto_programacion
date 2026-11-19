@@ -52,7 +52,6 @@ def Test_manual_regression():
 
 if __name__ == "__main__":
     Test_manual_regression()
-
 # APARTADO 3
 from numpy import array, linspace, zeros, dot
 import matplotlib.pyplot as plt
