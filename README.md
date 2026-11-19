@@ -60,7 +60,7 @@ import matplotlib.pyplot as plt
  ### Evaluación de los polinomios de Lagrange y sus derivadas en xp.
 def Lagrange_polynomials(x, xp):
 
- ### Evalúa los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
+ ### Evaluamos los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
     N = len(x) - 1
     Lagrange = zeros((N+1, N+1, N+1))
 
