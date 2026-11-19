@@ -75,7 +75,7 @@ def interpolar_densidad_isa(altitudes_isa, densidades_isa, h_objetivo):
     L = Lagrange_polynomials(altitudes_isa, h_objetivo)
     return dot(L[0, :], densidades_isa)
 
- ### Calcula la densidad del aire en el apogeo (h = 405 m) y genera la curva interpolada.
+ ### Cálculo de la densidad del aire en el apogeo (h = 405 m) y curva interpolada.
 def modelo_atmosferico():
     altitudes_isa = array([0, 500, 1000, 1500, 2000, 2500])
     densidades_isa = array([1.225, 1.167, 1.112, 1.058, 1.007, 0.957])
@@ -84,7 +84,7 @@ def modelo_atmosferico():
     print("Densidad del aire en el apogeo (h = 405 m) =", rho_apogeo, "kg/m^3")
     print("Interpretación física: A 405 m de altitud la densidad del aire disminuye ligeramente respecto al nivel del mar (1.225 kg/m^3), reduciendo la resistencia aerodinámica en el apogeo.")
 
- ### Puntos del polinomio interpolante para representar la curva
+### Puntos del polinomio interpolante para representar la curva
     M = 100
     hm = linspace(0, 2500, M)
     rhom = zeros(M)
