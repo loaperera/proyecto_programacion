@@ -1,6 +1,7 @@
 # proyecto_programacion
+# Apartado 1: Calibración de la plataforma de lanzamiento (Sistema Lineal)
 
-# APARTADO 2
+# Apartado 2: Caracterización Aerodinámica (Regresión Lineal)
 from numpy import array, polyfit, polyval, linspace, diag, transpose, matmul
 from numpy.linalg import svd, solve  
 import matplotlib.pyplot as plt
@@ -53,49 +54,49 @@ def Test_manual_regression():
 if __name__ == "__main__":
     Test_manual_regression()
 
-# APARTADO 3
+# Apartado 3: Modelo Atmosférico Local (Interpolación 1D)
 from numpy import array, linspace, zeros, dot
 import matplotlib.pyplot as plt
 
- ### Evaluación de los polinomios de Lagrange y sus derivadas en xp.
+### Evaluación de los polinomios de Lagrange y sus derivadas en xp.
 def Lagrange_polynomials(x, xp):
 
- ### Evaluamos los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
+### Evaluamos los polinomios de Lagrange y sus derivadas en xp a partir de los nodos x.
     N = len(x) - 1
     Lagrange = zeros((N+1, N+1, N+1))
 
- ### j indica cada uno de los distintos polinomios de Lagrange
+### j indica cada uno de los distintos polinomios de Lagrange
     for j in range(N+1):
- ### El polinomio de Lagrange j de orden 0 es igual a 1
+### El polinomio de Lagrange j de orden 0 es igual a 1
         Lagrange[0, j, 0] = 1
         n = 1
         for i in range(N+1):
             if i != j:
- ### El orden del polinomio aumenta solo cuando se considera el nodo x[i] (i != j)
+### El orden del polinomio aumenta solo cuando se considera el nodo x[i] (i != j)
                 for k in range(N, -1, -1): # k es el orden de derivación
                     Lagrange[k, j, n] = ( Lagrange[k, j, n-1] * (xp - x[i]) + k * Lagrange[k-1, j, n-1] ) / ( x[j] - x[i] )
                 n = n + 1
     return Lagrange[:, :, n-1]
 
- ### Interpolación 1D de la densidad ISA en una altitud objetivo.
+### Interpolación 1D de la densidad ISA en una altitud objetivo.
 def interpolar_densidad_isa(altitudes_isa, densidades_isa, h_objetivo):
     L = Lagrange_polynomials(altitudes_isa, h_objetivo)
     return dot(L[0, :], densidades_isa)
 
- ### Calcula la densidad del aire en el apogeo (h = 405 m) y genera la curva interpolada.
+### Calcula la densidad del aire en el apogeo (h = 405 m) y genera la curva interpolada.
 def modelo_atmosferico():
     
- ### Atmósfera Estándar (ISA): Altitud (m) y Densidad (kg/m^3)
+### Atmósfera Estándar (ISA): Altitud (m) y Densidad (kg/m^3)
     altitudes_isa = array([0, 500, 1000, 1500, 2000, 2500])
     densidades_isa = array([1.225, 1.167, 1.112, 1.058, 1.007, 0.957])
 
- ### Cálculo de la densidad en el apogeo
+### Cálculo de la densidad en el apogeo
     h_apogeo = 405.0
     rho_apogeo = interpolar_densidad_isa(altitudes_isa, densidades_isa, h_apogeo)
     print("Densidad del aire en el apogeo (h = 405 m) =", rho_apogeo, "kg/m^3")
     print("Interpretación física: A 405 m de altitud la densidad del aire disminuye ligeramente respecto al nivel del mar (1.225 kg/m^3), reduciendo la resistencia aerodinámica en el apogeo.")
 
- ### Puntos del polinomio interpolante para representar la curva
+### Puntos del polinomio interpolante para representar la curva
     M = 100
     hm = linspace(0, 2500, M)
     rhom = zeros(M)
@@ -104,14 +105,14 @@ def modelo_atmosferico():
 
     return altitudes_isa, densidades_isa, hm, rhom, h_apogeo, rho_apogeo
 
- # Validación
+### Validación
 def test_apartado3():
     altitudes_isa, densidades_isa, hm, rhom, h_apogeo, rho_apogeo = modelo_atmosferico()
 
- ### Validación en un nodo conocido (h = 500 m -> rho = 1.167 kg/m^3)
+### Validación en un nodo conocido (h = 500 m -> rho = 1.167 kg/m^3)
     rho_test = interpolar_densidad_isa(altitudes_isa, densidades_isa, 500.0)
     print("Test validación en nodo h = 500 m (error) =", abs(rho_test - 1.167))
- ### Representación gráfica
+### Representación gráfica
     plt.plot(altitudes_isa, densidades_isa, 'o', label='Datos ISA')
     plt.plot(hm, rhom, '-', label='Interpolante de Lagrange')
     plt.plot(h_apogeo, rho_apogeo, 'rs', label='Apogeo (h = 405 m)')
@@ -123,7 +124,7 @@ def test_apartado3():
 if __name__ == "__main__":
     test_apartado3()
     
-# APARTADO 4
+# Apartado 4: Cinemática a partir de Telemetría (Derivación Numérica)
 
 ### Telemetría de Radar. Derivación numérica.
 
@@ -131,7 +132,7 @@ from numpy import zeros, linspace, array, sqrt, sin
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
- ### Derivada numérica (diferencias finitas).
+### Derivada numérica (diferencias finitas).
 
 def Derivatives(t, f):
 
@@ -146,7 +147,7 @@ def Derivatives(t, f):
 
     return df
     
- ### Velocidades a partir de telemetría del radar.
+### Velocidades a partir de telemetría del radar.
 
 def Radar_kinematics(t, x, y):
 
@@ -156,7 +157,7 @@ def Radar_kinematics(t, x, y):
 
     return Vx, Vy, V
 
- ### Gráfica y resultados del Apartado 4
+### Gráfica y resultados del Apartado 4
 
 def Plot_Apartado4(ax, t, x, y, ax_slider):
 
@@ -176,7 +177,7 @@ def Plot_Apartado4(ax, t, x, y, ax_slider):
     print("Velocidad final =", round(V[-1], 2), "m/s")
     print("Sentido físico: Vx disminuye por la resistencia del aire y Vy es 0 en el apogeo (t=4.5 s).\n")
 
- ### Gráfica inicial
+### Gráfica inicial
     def draw_plot(eps):
         perturbacion = eps * sin(3.0 * t)
         Vx_new, Vy_new, V_new = Radar_kinematics(t, x + perturbacion, y + perturbacion)
@@ -196,11 +197,11 @@ def Plot_Apartado4(ax, t, x, y, ax_slider):
 
     draw_plot(0.0)
 
- ### Slider de perturbación (para modificar el error de lectura del radar (epsilon en metros))
+### Slider de perturbación (para modificar el error de lectura del radar (epsilon en metros))
     ax_slider.clear()
     slider_epsilon = Slider(ax_slider, "Error radar (m) ", 0.0, 3.0, valinit=0.0, valstep=0.2)
 
- ### Recálculo y actualización de las curvas en tiempo real
+### Recálculo y actualización de las curvas en tiempo real
    
     def update(val):
         draw_plot(slider_epsilon.val)
@@ -215,8 +216,57 @@ if __name__ == "__main__":
     t_tel = linspace(0, 8, 17)
     x_tel = array([0, 48, 93, 137, 178, 218, 256, 292, 326, 359, 390, 419, 448, 474, 500, 524, 547])
     y_tel = array([0, 85, 160, 225, 280, 325, 360, 385, 400, 405, 400, 385, 360, 325, 280, 225, 160])
-
     fig, ax = plt.subplots()
     ax_slider = plt.axes([0.22, 0.02, 0.63, 0.03])
     slider = Plot_Apartado4(ax, t_tel, x_tel, y_tel, ax_slider)
     plt.show()
+
+# Apartado 5: Energía Disipada por la Atmósfera (Integración Numérica)
+import numpy as np
+
+### Método numpy para integración numérica
+v = np.sqrt(Vx**2 + Vy**2)
+f = 0.5 * CDA * rho_apogeo * v**3
+W_drag = np.trapezoid(f, t)
+print("Trabajo de la resistencia aerodinamica:", W_drag)
+
+### Método manual para integración numérica (por Simpson)
+t_tel = np.linspace(0, 8, 17)
+x_tel = np.array([0,48,93,137,178,218,256,292,326,359,390,419,448,474,500,524,547])
+y_tel = np.array([0,85,160,225,280,325,360,385,400,405,400,385,360,325,280,225,160])
+
+def partition(a, b, N):
+    return array([a + (b-a)/N * i for i in range(0, N+1)])
+
+def Simpson_rule(f, a, b, N):
+    x = partition(a,b,N)
+    y = f(x)
+    dx = (b-a)/N
+    return dx/3 * (y[0] + y[N] + 4*sum(y[1:N:2]) + 2*sum(y[2:N-1:2]))
+
+def f_drag(t):
+    Vx_t = interp(t, t_tel, Vx)
+    Vy_t = interp(t, t_tel, Vy)
+    v = sqrt(Vx_t**2 + Vy_t**2)
+    return 0.5 * CDA * rho_apogeo * v**3
+
+W_drag = Simpson_rule(f_drag, 0, tf, N)
+print("Trabajo de la resistencia aerodinamica:", W_drag)
+
+### Método manual para integración numérica (por el método de los trapecios)
+from numpy import *
+
+def partition(a, b, N):
+    return array([a + (b-a)/N * i for i in range(0, N+1)])
+
+def Trapezoidal_rule(f, a, b, N):
+    x = partition(a,b,N)
+    y = f(x)
+    dx = (b-a)/N
+    print(len(y))
+    return dx/2 * (y[0] + y[N] + 2*sum(y[1:N]))
+
+W_drag = Trapezoidal_rule(f_drag, 0, tf, N)
+print("Trabajo de la resistencia aerodinamica:", W_drag)
+
+# Apartado 6: Predicción del Impacto (Búsqueda de Raíces)
