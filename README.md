@@ -53,13 +53,53 @@ def Test_manual_regression():
 if __name__ == "__main__":
     Test_manual_regression()
 
+# APARTADO 3
+import numpy as np
+from scipy.interpolate import lagrange
+import matplotlib.pyplot as plt
 
+def estimar_densidad_local():
+### Datos de Partida: Atmósfera Estándar (ISA)
+    altitud_isa = np.array([0, 500, 1000, 1500, 2000, 2500])
+    densidad_isa = np.array([1.225, 1.167, 1.112, 1.058, 1.007, 0.957])
+    
+### Altitud de apogeo registrada por el radar
+    h_apogeo = 405.0 
+    
+### Creación del polinomio interpolante de Lagrange (estilo week10.py)
+    polinomio_densidad = lagrange(altitud_isa, densidad_isa)
+    
+### Evaluación del polinomio en h = 405 m
+    rho_apogeo = polinomio_densidad(h_apogeo)
+    
+### Resultados e interpretación física
+    print(f"--- Apartado 3: Modelo Atmosférico Local ---")
+    print(f"Densidad del aire estimada a {h_apogeo} m: {rho_apogeo:.4f} kg/m^3")
+    print("Sentido Físico: Como era de esperar, al ascender a 405 metros, la densidad del aire experimenta una disminución respecto al nivel del mar (1.225 kg/m^3), lo que se traducirá en una menor resistencia aerodinámica sobre la sonda en su punto de apogeo.")
+    
+### Gráfica del interpolante
+    hp = np.linspace(0, 2500, 100)
+    rhop = polinomio_densidad(hp)
+    
+    plt.scatter(altitud_isa, densidad_isa, label='Datos ISA')
+    plt.plot(hp, rhop, 'r', label='Polinomio interpolante')
+    plt.scatter([h_apogeo], [rho_apogeo], color='green', zorder=5, label=f'Apogeo ({h_apogeo} m)')
+    plt.xlabel('Altitud h (m)')
+    plt.ylabel('Densidad ρ (kg/m³)')
+    plt.title('Interpolación 1D - Densidad ISA')
+    plt.legend()
+    plt.show()
+    
+    return rho_apogeo
+
+if __name__ == "__main__":
+    rho_estimada = estimar_densidad_local()
 
 # APARTADO 4
 from numpy import zeros, linspace, array, sqrt
 import matplotlib.pyplot as plt
 
-# Derivada numérica (diferencias finitas).
+### Derivada numérica (diferencias finitas).
 
 def Derivatives(t, f):
 
@@ -76,7 +116,7 @@ def Derivatives(t, f):
 
     return df
 
-# Velocidades a partir de telemetría del radar.
+### Velocidades a partir de telemetría del radar.
 
 def Radar_kinematics(t, x, y):
 
@@ -86,7 +126,7 @@ def Radar_kinematics(t, x, y):
 
     return Vx, Vy, V
 
-# Gráfica y resultados
+### Gráfica y resultados
 
 def Plot_Apartado4(ax, t, x, y):
 
